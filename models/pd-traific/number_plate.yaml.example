@@ -1,0 +1,4 @@
+names: [number_plate]
+nc: 1
+train: path to train images
+val: path to val images
