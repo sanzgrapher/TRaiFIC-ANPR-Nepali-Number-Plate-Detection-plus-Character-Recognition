@@ -1,0 +1,7 @@
+[project]
+name = "TRaiFIC"
+version = "0.1.0"
+description = "Automatic Nepali Number Plate Recognition System"
+readme = "README.md"
+requires-python = ">=3.13.2"
+dependencies = []
