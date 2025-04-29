@@ -3,17 +3,13 @@ name = "TRaiFIC"
 version = "0.1.0"
 description = "TRaiFIC : Automatic Nepali Number Plate Recognition System"
 readme = "README.md"
-requires-python = ">=3.13.2"
+requires-python = ">=3.10.17"
 dependencies = [
-    "notebook>=7.4.0",
-    "split-folders>=0.5.1",
-    "torch>=2.6.0",
-    "torchaudio>=2.6.0",
-    "torchvision>=0.21.0",
-    "ultralytics>=8.3.107",
+   "ipykernel>=6.29.5",
+   "lap>=0.5.12",
+   "notebook>=7.4.1",
+   "numpy>=2.1.1",
+   "split-folders>=0.5.1",
+   "ultralytics>=8.3.116",
 ]
 
-[dependency-groups]
-dev = [
-    "jupyter>=1.1.1",
-]
