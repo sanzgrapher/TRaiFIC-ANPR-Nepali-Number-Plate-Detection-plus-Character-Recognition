@@ -1,0 +1,5 @@
+names: [character]
+nc: 1
+test: \data\test\images
+train: \data\train\images
+val: \data\val\images
