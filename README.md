@@ -65,10 +65,10 @@ Start the Flask application:
 
 ```bash
 cd application
-uv run app.py
+uv run --flask run -p 3000
 ```
 
-The web interface will be available at `http://localhost:5001`
+The web interface will be available at `http://127.0.0.1:3000/`
 
 ## 🔄 Pipeline Process
 
