@@ -1,189 +1,94 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>License Plate Recognition Results</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANPR Results</title>
     <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
-            background-color: #f8f9fa;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .result-item {
-            border: 1px solid #ccc;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-        }
-
-        .plate-images {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 15px;
-            justify-content: space-around;
-        }
-
-        .plate-images div {
-            text-align: center;
-        }
-
-        .plate-images img {
-            max-width: 100%;
-            /* Allow shrinking */
-            width: 350px;
-            /* Set a preferred width */
-            height: auto;
-            margin-top: 5px;
-            border: 1px solid #eee;
-            background-color: #f0f0f0;
-            /* Light background for visibility */
-            object-fit: contain;
-            /* Ensure aspect ratio is maintained */
-        }
-
-        .char-list {
-            display: flex;
-            flex-wrap: wrap;
-            list-style: none;
-            padding: 0;
-            margin-top: 10px;
-        }
-
-        .char-item {
-            margin: 5px;
-            text-align: center;
-            border: 1px solid #ddd;
-            padding: 5px;
-            min-width: 50px;
-            background-color: #fdfdfd;
-        }
-
-        .char-item img {
-            max-height: 40px;
-            width: auto;
-            display: block;
-            margin: 0 auto 5px auto;
-            background-color: #eee;
-        }
-
-        h1 {
-            text-align: center;
-            color: #343a40;
-            margin-bottom: 25px;
-        }
-
-        h2 {
-            margin-top: 0;
-            color: #495057;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-
-        h3 {
-            margin-bottom: 10px;
-            color: #6c757d;
-            font-size: 1.1em;
-        }
-
-        strong {
-            color: #007bff;
-        }
-
-        /* Highlight recognized text */
-        .dims {
-            font-size: 0.8em;
-            color: #888;
-            margin-top: 5px;
-        }
-
-        .no-results {
-            text-align: center;
-            color: #6c757d;
-            font-size: 1.2em;
-            margin-top: 30px;
-        }
-
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 30px;
-            font-size: 1.1em;
-        }
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 1200px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .result-item { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; background-color: #f9f9f9; }
+        .result-item h3 { margin-top: 0; }
+        .plate-images, .char-details { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 10px; }
+        .plate-images img, .char-details .char-item img { max-width: 100%; height: auto; border: 1px solid #ddd; max-height: 80px; } /* Control image size */
+        .plate-images div, .char-details .char-item { text-align: center; }
+        .plate-images div span, .char-details .char-item span { display: block; font-size: 0.9em; margin-top: 5px; color: #555; }
+        .final-text { font-size: 1.4em; font-weight: bold; color: #0056b3; margin-top: 10px; }
+        .char-item { border: 1px solid #eee; padding: 5px; background-color: white; }
+        .char-item .char-pred { font-size: 1.2em; font-weight: bold; }
+        .char-item .char-conf { font-size: 0.8em; color: green; }
+        .error-item { border: 1px solid red; background-color: #fdd; padding: 10px; }
+         a { color: #007bff; text-decoration: none;}
+         a:hover { text-decoration: underline;}
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <h1>Results for: {{ filename }}</h1>
-        {% if results %}
+    <h1>ANPR Processing Results</h1>
+    <p>File: <strong>{{ filename }}</strong></p>
+     <p><a href="{{ url_for('upload_file_route') }}">« Upload Another File</a></p>
+
+    {% if results %}
+        <h2>Detected Plates ({{ results | length }})</h2>
         {% for result in results %}
-        <div class="result-item">
-            <h2>Plate {{ result.plate_index + 1 }} (Frame: {{ result.frame_number }}, Confidence: {{
-                "%.2f"|format(result.confidence) }})</h2>
-            <h3>Recognized Text: <strong>{{ result.final_text if result.final_text else "N/A" }}</strong></h3>
-
-            <div class="plate-images">
-                <div>
-                    <strong>Original Crop:</strong><br>
+            {% if 'error' in result %}
+                <div class="result-item error-item">
+                    <h3>Error Processing Plate</h3>
+                    <p><strong>File:</strong> {{ result.get('filename', 'N/A') }}</p>
+                    <p><strong>Frame:</strong> {{ result.get('frame_number', 'N/A') }}, <strong>Index:</strong> {{ result.get('plate_index', 'N/A') }}</p>
+                    <p><strong>Error:</strong> {{ result.error }}</p>
                     {% if result.original_plate %}
-                    <img src="data:image/png;base64,{{ result.original_plate }}" alt="Original Plate Crop">
-                    {% else %} Missing Image {% endif %}
-                    <div class="dims">{{ result.plate_dimensions.width }}x{{ result.plate_dimensions.height }}</div>
+                     <div>
+                        <span>Original Crop (if available):</span>
+                        <img src="{{ result.original_plate }}" alt="Original Plate Crop (Error)">
+                     </div>
+                    {% endif %}
                 </div>
-                <div>
-                    <strong>Deskewed Plate:</strong><br>
-                    {% if result.deskewed_plate %}
-                    <img src="data:image/png;base64,{{ result.deskewed_plate }}" alt="Deskewed Plate">
-                    {% else %} Missing Image {% endif %}
-                    <div class="dims">{{ result.deskewed_dimensions.width }}x{{ result.deskewed_dimensions.height }}
-                    </div>
-                </div>
-                <div>
-                    <strong>Digital Recreation:</strong><br>
-                    {% if result.digital_plate %}
-                    <img src="data:image/png;base64,{{ result.digital_plate }}" alt="Digital Plate Recreation">
-                    {% else %} Missing Image {% endif %}
-                    <div class="dims">Based on Deskewed</div>
-                </div>
-            </div>
-
-            <h3>Detected Characters:</h3>
-            {% if result.characters %}
-            <ul class="char-list">
-                {% for char in result.characters %}
-                <li class="char-item">
-                    {% if char.image %}
-                    <img src="data:image/png;base64,{{ char.image }}" alt="Char">
-                    {% else %}Img Err{% endif %}
-                    {{ char.prediction }}<br>
-                    ({{ "%.2f"|format(char.confidence) }})
-                </li>
-                {% endfor %}
-            </ul>
             {% else %}
-            <p>No characters detected or processed for this plate.</p>
-            {% endif %}
-        </div>
-        {% endfor %}
-        {% else %}
-        <p class="no-results">No license plates were detected in the uploaded file.</p>
-        {% endif %}
-        <p class="back-link"><a href="{{ url_for('upload_file_route') }}">Upload another file</a></p>
-    </div>
-</body>
+                <div class="result-item">
+                    <h3>Plate #{{ loop.index }} (Frame: {{ result.frame_number }}, Index: {{ result.plate_index }})</h3>
+                    <p>Plate Detection Confidence: {{ "%.2f"|format(result.confidence * 100) }}%</p>
+                    <div class="final-text">Recognized Text: {{ result.final_text if result.final_text else "[No Text Recognized]" }}</div>
 
+                    <h4>Plate Images:</h4>
+                    <div class="plate-images">
+                        <div>
+                            <span>Original Crop ({{ result.plate_dimensions.width }}x{{ result.plate_dimensions.height }})</span>
+                            <img src="{{ result.original_plate }}" alt="Original Plate {{ loop.index }}">
+                        </div>
+                        <div>
+                             <span>Deskewed ({{ result.deskewed_dimensions.width }}x{{ result.deskewed_dimensions.height }})</span>
+                            <img src="{{ result.deskewed_plate }}" alt="Deskewed Plate {{ loop.index }}">
+                        </div>
+                         <div>
+                            <span>Digital Recreation</span>
+                            <img src="{{ result.digital_plate }}" alt="Digital Plate {{ loop.index }}">
+                        </div>
+                    </div>
+
+                    {% if result.characters %}
+                        <h4>Character Details:</h4>
+                        <div class="char-details">
+                            {% for char in result.characters %}
+                                <div class="char-item">
+                                    <span class="char-pred">{{ char.prediction }}</span>
+                                    <img src="{{ char.image }}" alt="Char '{{ char.prediction }}'">
+                                    <span class="char-conf">Conf: {{ "%.1f"|format(char.confidence * 100) }}%</span>
+                                    <span style="font-size: 0.7em;">({{char.x1}},{{char.y1}})-({{char.x2}},{{char.y2}})</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                         <p>No characters were recognized for this plate.</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <h2>No Plates Detected</h2>
+        <p>No license plates were found in the uploaded file: {{ filename }}</p>
+    {% endif %}
+
+     <p style="margin-top: 30px;"><a href="{{ url_for('upload_file_route') }}">« Upload Another File</a></p>
+
+</body>
 </html>
