@@ -20,8 +20,7 @@ The system is deployed as a Flask web application for easy interaction.
 
 <https://github.com/sanzgrapher/TRaiFIC-ANPR-Nepali-Number-Plate-Detection-plus-Character-Recognition/demo.mp4>
 
-<!-- Alternative with thumbnail and link -->
-[![TRaiFIC ANPR Demo]](https://github.com/sanzgrapher/TRaiFIC-ANPR-Nepali-Number-Plate-Detection-plus-Character-Recognition/demo.mp4)
+![Demo Video](https://github.com/sanzgrapher/TRaiFIC-ANPR-Nepali-Number-Plate-Detection-plus-Character-Recognition/raw/ed3698c9c86eff052be1829a84c4c50fc9f7e605/demo.mp4)
 
 ## 📂 Project Structure
 
