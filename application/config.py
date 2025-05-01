@@ -4,9 +4,9 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER_NAME = 'anpr_uploads'
 UPLOAD_FOLDER_PATH = os.path.join(APP_ROOT, UPLOAD_FOLDER_NAME)
 
-PLATE_MODEL_PATH = 'F:/development/python/Number-Plate-Detection/platedetection/training_results/license_plate_detection_yolov8_4_14_25_4_493/weights/best.pt'
-CHAR_SEG_MODEL_PATH = 'F:/development/python/Number-Plate-Detection/segmentation-model/path_project/segmentation_yolov8_4_14_25_4_49/weights/best.pt'
-CHAR_REC_MODEL_PATH = "F:/development/python/Number-Plate-Detection/ocr nep/nepali_plate_cnn.pth"
+PLATE_MODEL_PATH = os.path.join(APP_ROOT, 'models/pd_traific_v2_mix.pt')
+CHAR_SEG_MODEL_PATH = os.path.join(APP_ROOT, 'models/sg_traific_v12.pt')
+CHAR_REC_MODEL_PATH = os.path.join(APP_ROOT, 'models/char_traific_v3.pth')
 
 FONT_PATH = "F:/development/python/Noto_Sans_Devanagari/NotoSansDevanagari-Regular.ttf"
 
@@ -21,7 +21,7 @@ PLATE_DETECT_CONF = 0.4
 CHAR_SEG_CONF = 0.3
 CHAR_REC_CONF_THRESHOLD = 0.4 
 
-VIDEO_FRAME_SKIP = 5
+VIDEO_FRAME_SKIP = 0
 
 DESKEW_MIN_PLATE_HEIGHT = 15
 DESKEW_MIN_PLATE_WIDTH = 30
