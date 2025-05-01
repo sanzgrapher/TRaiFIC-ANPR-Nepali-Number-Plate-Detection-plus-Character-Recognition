@@ -15,6 +15,14 @@ This project implements a complete ANPR pipeline:
 
 The system is deployed as a Flask web application for easy interaction.
 
+
+## Demo
+
+<https://github.com/sanzgrapher/TRaiFIC-ANPR-Nepali-Number-Plate-Detection-plus-Character-Recognition/demo.mp4>
+
+<!-- Alternative with thumbnail and link -->
+[![TRaiFIC ANPR Demo]](https://github.com/sanzgrapher/TRaiFIC-ANPR-Nepali-Number-Plate-Detection-plus-Character-Recognition/demo.mp4)
+
 ## 📂 Project Structure
 
 ```
