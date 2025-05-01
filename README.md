@@ -65,7 +65,7 @@ Start the Flask application:
 
 ```bash
 cd application
-python app.py
+uv run app.py
 ```
 
 The web interface will be available at `http://localhost:5001`
