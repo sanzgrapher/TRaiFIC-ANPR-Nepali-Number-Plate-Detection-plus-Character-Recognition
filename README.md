@@ -18,9 +18,13 @@ The system is deployed as a Flask web application for easy interaction.
 
 ## Demo
 
-<https://github.com/sanzgrapher/TRaiFIC-ANPR-Nepali-Number-Plate-Detection-plus-Character-Recognition/demo.mp4>
+[![TRaiFIC Demo Video](https://img.shields.io/badge/Watch-Demo%20Video-blue)](https://drive.google.com/file/d/1-cuF_zvJ8r68mr4TatM_Fbf_fHvdS_TK/view)
 
-![Demo Video](https://github.com/sanzgrapher/TRaiFIC-ANPR-Nepali-Number-Plate-Detection-plus-Character-Recognition/raw/ed3698c9c86eff052be1829a84c4c50fc9f7e605/demo.mp4)
+<video src="https://github-production-user-asset-6210df.s3.amazonaws.com/101717917/439588348-f5c71dd6-7080-4bec-9dcf-4c7a689a85ea.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250501%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250501T115137Z&X-Amz-Expires=300&X-Amz-Signature=30a129e90087a683dda015d3808cbbdb9995a400b5646a1012b378b42ed76c08&X-Amz-SignedHeaders=host" controls></video>
+
+
+
+
 
 ## 📂 Project Structure
 
