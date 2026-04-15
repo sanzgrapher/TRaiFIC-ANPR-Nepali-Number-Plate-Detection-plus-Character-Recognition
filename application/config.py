@@ -2,7 +2,8 @@ import os
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER_NAME = 'anpr_uploads'
-UPLOAD_FOLDER_PATH = os.path.join(APP_ROOT, UPLOAD_FOLDER_NAME)
+# Use /tmp on serverless platforms (e.g. Vercel) where the deploy root is read-only
+UPLOAD_FOLDER_PATH = os.path.join('/tmp', UPLOAD_FOLDER_NAME)
 
 PLATE_MODEL_PATH = os.path.join(APP_ROOT, 'models/pd_traific_v2_mix.pt')
 CHAR_SEG_MODEL_PATH = os.path.join(APP_ROOT, 'models/sg_traific_v12.pt')
