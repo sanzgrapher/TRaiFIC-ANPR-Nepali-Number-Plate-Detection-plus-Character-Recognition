@@ -5,13 +5,8 @@ description = "TRaiFIC : Automatic Nepali Number Plate Recognition System"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-   "deep-sort-realtime>=1.3.2",
    "flask>=3.1.0",
-   "ipykernel>=6.29.5",
-   "lap>=0.5.12",
-   "notebook>=7.4.1",
    "numpy>=2.1.1",
-   "split-folders>=0.5.1",
    "ultralytics>=8.3.116",
 ]
 
