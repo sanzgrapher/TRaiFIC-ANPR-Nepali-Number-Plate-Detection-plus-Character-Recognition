@@ -1,7 +1,5 @@
 import cv2
 import numpy as np
-import torch
-import torch.nn.functional as F
 from PIL import Image, ImageDraw, ImageFont
 import logging
 import os
@@ -99,7 +97,7 @@ def process_and_order_characters(deskewed_plate, char_seg_results, char_recog_mo
         if seg_conf < config.CHAR_SEG_CONF: # Use confidence from config
             continue
 
-        x1, y1, x2, y2 = map(int, box.xyxy[0].cpu().numpy())
+        x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
         x1, y1 = max(0, x1), max(0, y1)
         x2, y2 = min(w_plate, x2), min(h_plate, y2)
 
@@ -114,29 +112,36 @@ def process_and_order_characters(deskewed_plate, char_seg_results, char_recog_mo
             continue
 
         try:
-            with torch.no_grad(): # Inference mode
-                output = char_recog_model(input_tensor)
-                probabilities = F.softmax(output, dim=1)
-                rec_conf, pred_idx = torch.max(probabilities, 1)
+            # ONNX Runtime inference — input_tensor is already a [1,1,32,32] float32 numpy array
+            input_name = char_recog_model.get_inputs()[0].name
+            raw_output = char_recog_model.run(None, {input_name: input_tensor})[0]  # [1, num_classes]
 
-                pred_label = "?"
-                if pred_idx.item() < len(config.CLASS_LABELS):
-                    pred_label = config.CLASS_LABELS[pred_idx.item()]
-                else:
-                    logging.error(f"Prediction index {pred_idx.item()} out of range for CLASS_LABELS (size {len(config.CLASS_LABELS)}).")
+            # Softmax
+            exp_out = np.exp(raw_output - raw_output.max(axis=1, keepdims=True))
+            probabilities = exp_out / exp_out.sum(axis=1, keepdims=True)
 
-                rec_confidence = float(rec_conf.item())
+            pred_idx = int(probabilities[0].argmax())
+            rec_confidence = float(probabilities[0, pred_idx])
 
-                characters_data.append({
-                    'prediction': pred_label,
-                    'confidence': rec_confidence,
-                    'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
-                    'cx': (x1 + x2) / 2.0, # Center X
-                    'cy': (y1 + y2) / 2.0, # Center Y
-                    'height': y2 - y1,
-                    'char_img_cv': char_img_cv # Keep CV image for potential base64 later
-                })
-                logging.debug(f"Char @ [{x1},{y1}-{x2},{y2}]: '{pred_label}' (Conf: {rec_confidence:.2f})")
+            pred_label = "?"
+            if pred_idx < len(config.CLASS_LABELS):
+                pred_label = config.CLASS_LABELS[pred_idx]
+            else:
+                logging.error(
+                    f"Prediction index {pred_idx} out of range for CLASS_LABELS "
+                    f"(size {len(config.CLASS_LABELS)})."
+                )
+
+            characters_data.append({
+                'prediction': pred_label,
+                'confidence': rec_confidence,
+                'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+                'cx': (x1 + x2) / 2.0,
+                'cy': (y1 + y2) / 2.0,
+                'height': y2 - y1,
+                'char_img_cv': char_img_cv,
+            })
+            logging.debug(f"Char @ [{x1},{y1}-{x2},{y2}]: '{pred_label}' (Conf: {rec_confidence:.2f})")
 
         except Exception as rec_err:
             logging.error(f"Error during character recognition step for char at [{x1},{y1},{x2},{y2}]: {rec_err}", exc_info=True)

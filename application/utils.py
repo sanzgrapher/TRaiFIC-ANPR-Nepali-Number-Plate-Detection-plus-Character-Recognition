@@ -4,7 +4,6 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import cv2
-import torch
 import logging
 
 import os
@@ -87,7 +86,7 @@ def four_point_transform(image, pts):
         return None
 
 
-def preprocess_char_image(image_cv, device):
+def preprocess_char_image(image_cv, device=None):  # device unused; kept for signature compatibility
     if image_cv is None or image_cv.size == 0:
         logging.warning("preprocess_char_image received empty image.")
         return None
@@ -111,6 +110,5 @@ def preprocess_char_image(image_cv, device):
 
     normalized = (resized.astype(np.float32) / 255.0 - 0.5) / 0.5
 
-    tensor = torch.tensor(normalized, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
-
-    return tensor.to(device)
+    # Return a [1, 1, H, W] float32 numpy array ready for ONNX Runtime
+    return normalized[np.newaxis, np.newaxis, :, :].astype(np.float32)

@@ -6,6 +6,7 @@ import time
 import config
 from utils import to_base64
 from character_processing import deskew_plate, process_and_order_characters, create_digital_plate
+from yolo_inference import yolo_predict
 
 def process_frame(frame, frame_number, filename_prefix, plate_model, seg_model, recog_model, device, ocr_font):
     if plate_model is None or seg_model is None or recog_model is None:
@@ -21,7 +22,7 @@ def process_frame(frame, frame_number, filename_prefix, plate_model, seg_model, 
     logging.debug(f"Processing Frame: {frame_number} from '{filename_prefix}' ({w_frame}x{h_frame})")
 
     try:
-        plate_results = plate_model.predict(frame, verbose=False, conf=config.PLATE_DETECT_CONF)
+        plate_results = yolo_predict(plate_model, frame, conf_threshold=config.PLATE_DETECT_CONF)
     except Exception as e:
         logging.error(f"Plate detection failed on frame {frame_number} ({filename_prefix}): {e}", exc_info=True)
         return [] # Cannot proceed without plate detection
@@ -70,7 +71,7 @@ def process_frame(frame, frame_number, filename_prefix, plate_model, seg_model, 
 
             if deskewed_plate is not None and deskewed_plate.shape[0] > 5 and deskewed_plate.shape[1] > 5:
                  try:
-                     char_seg_results = seg_model.predict(deskewed_plate, verbose=False, conf=config.CHAR_SEG_CONF)
+                     char_seg_results = yolo_predict(seg_model, deskewed_plate, conf_threshold=config.CHAR_SEG_CONF)
                  except Exception as e:
                      logging.error(f"Char segmentation failed for plate {i}, frame {frame_number}: {e}", exc_info=True)
 
